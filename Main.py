@@ -64,12 +64,12 @@ def get_model():
         return data
 
 
-def fields() -> dict:
+def fields():
     """
     Назначение функции: получить значение для параметра field
     :return: словарь
     """
-    return {
+    field = {
         "model": get_model(),
         "pk": 1, # не могу вспомнить как сделать так, чтоб с каждым разом увеличивалось на 1. Здесь вроде бы никак. а как вписать этот параметр в функцию генератор - не пойму
         "fields": {
@@ -84,34 +84,20 @@ def fields() -> dict:
         ]
         }
     }
+    yield field
 
 
-def to_json_dict(field):
+def to_json_dict(fields):
     """ Функция серилизует в Json строку"""
-    json_dict = json.dumps(field)
+    json_dict = json.dumps(fields)
     return json_dict
 
 
 if __name__ == "__main__": # не пойму куда поставить \n, чтобы каждое значение было на отдельной строке
-    json_dict = {
-        "model": get_model(),
-        "pk": 1,
-        "fields": {
-            "title": get_title(),
-            "year": get_year(),
-            "pages": get_pages(),
-            "isbn13": get_isbn13(faker),
-            "rating": get_rating(),
-            "price": get_price(),
-            "author": [
-                get_author()
-            ]
-        }
-    }
-    print(json_dict)
+    print(next(fields()))
 
 
-# не пойму как во все это вписать функцию генератор
+
 
 
 
