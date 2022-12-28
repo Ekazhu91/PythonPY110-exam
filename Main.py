@@ -56,22 +56,14 @@ def get_author():
     return [" ".join((faker.first_name_female(), faker.last_name())) for _ in range(random.randint(1, 3))]
 
 
-def get_model():
-    """ Извлекает данные для параметра model"""
-    filename_ = "conf.py"
-    with open(filename_) as f:
-        data = MODEL
-        return data
-
-
-def fields():
+def fields(start):
     """
     Назначение функции: получить значение для параметра field
     :return: словарь
     """
-    field = {
-        "model": get_model(),
-        "pk": 1, # не могу вспомнить как сделать так, чтоб с каждым разом увеличивалось на 1. Здесь вроде бы никак. а как вписать этот параметр в функцию генератор - не пойму
+    pk = start
+    while True:
+        field = {
         "fields": {
         "title": get_title(),
         "year": get_year(),
@@ -79,22 +71,39 @@ def fields():
         "isbn13": get_isbn13(faker),
         "rating": get_rating(),
         "price": get_price(),
-        "author": [
-            get_author()
-        ]
+        "author": get_author()
         }
-    }
-    yield field
+        }
+        yield field
+        pk += 1
 
 
-def to_json_dict(fields):
+def gen_dict(start):
+    """Генератор для получение словарей"""
+    while True:
+        dict_ = {
+            "model": MODEL,
+            "pk": start,
+            "fields": fields(start)
+        }
+        yield dict_
+
+
+def to_json_dict(data: list):
     """ Функция серилизует в Json строку"""
-    json_dict = json.dumps(fields)
-    return json_dict
+    with open("book.json", "w", encoding="utf-8") as f:
+        f.write(json.dumps(data))
 
 
-if __name__ == "__main__": # не пойму куда поставить \n, чтобы каждое значение было на отдельной строке
-    print(next(fields()))
+def main():
+    """Запускает функцию-генератор"""
+    gen = fields(3)
+    data = [next(gen) for _ in range(100)]
+    to_json_dict(data)
+
+
+if __name__ == "__main__":
+    main()
 
 
 
