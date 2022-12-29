@@ -56,37 +56,24 @@ def get_author():
     return [" ".join((faker.first_name_female(), faker.last_name())) for _ in range(random.randint(1, 3))]
 
 
-def fields(start):
-    """
-    Назначение функции: получить значение для параметра field
-    :return: словарь
-    """
+def gen_dict(start):
+    """Генератор для получение словарей"""
     pk = start
     while True:
-        field = {
-        "fields": {
+        dict_ = {
+            "model": MODEL,
+            "pk": start,
+            "fields": {
         "title": get_title(),
         "year": get_year(),
         "pages": get_pages(),
         "isbn13": get_isbn13(faker),
         "rating": get_rating(),
         "price": get_price(),
-        "author": get_author()
-        }
-        }
-        yield field
-        pk += 1
-
-
-def gen_dict(start):
-    """Генератор для получение словарей"""
-    while True:
-        dict_ = {
-            "model": MODEL,
-            "pk": start,
-            "fields": fields(start)
+        "author": get_author()}
         }
         yield dict_
+        pk += 1
 
 
 def to_json_dict(data: list):
@@ -97,13 +84,14 @@ def to_json_dict(data: list):
 
 def main():
     """Запускает функцию-генератор"""
-    gen = fields(3)
+    gen = gen_dict(3)
     data = [next(gen) for _ in range(100)]
     to_json_dict(data)
 
 
 if __name__ == "__main__":
     main()
+
 
 
 
